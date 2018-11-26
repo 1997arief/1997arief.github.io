@@ -58,21 +58,4 @@
 	</body>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script type="text/javascript">
-		var data = null;
-
-		var xhr = new XMLHttpRequest();
-		xhr.withCredentials = true;
-
-		xhr.addEventListener("readystatechange", function () {
-		  if (this.readyState === this.DONE) {
-		    console.log(this.responseText);
-		  }
-		});
-
-		xhr.open("GET", "https://api.royaleapi.com/player/Q28RUCL/chests");
-		xhr.setRequestHeader("authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjA0MywiaWRlbiI6IjUxNTM1MjA0MDY1OTA5MTQ1NiIsIm1kIjp7fSwidHMiOjE1NDI5NDAwODgwMDJ9.axmnLKp_sm5JGsgVHXujfKCBa_aLnecwDjRplwA3njE");
-
-		xhr.send(data);
-	</script>
 </html>
