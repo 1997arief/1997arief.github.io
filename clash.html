@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CLASH ROYAL</title>
+	<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+				<br>
+				<div class="panel panel-info">
+					<div class="panel-heading">
+					Search
+					</div>
+					<div class="panel-body">
+						<form class="form-horizontal" id="formInput">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Search</label>
+								<div class="col-sm-9">
+									<input type="text" name="name" class="form-control">
+									<input type="hidden" name="max" value="10">
+								</div>
+							</div>
+							<div class="col-md-12">
+								<button type="submit" id="btnSubmit" name="submit" data-loading-text="Loading..." class="btn btn-primary">Submit</button>
+							</div>
+						</form>
+						<div class="col-md-12" id="result">
+							
+						</div>
+						<div class="collapse" id="divCollapse">
+							<div class="well" id="collapseContent">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- modal -->
+		<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="modalTitle"></h4>
+					</div>
+					<div class="modal-body" id="divDetailPlayer">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		<!-- end modal -->
+	</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script type="text/javascript">
+	$('#formInput').on('submit', function(e){
+		$.ajax({
+			type: 'POST',
+			url : 'https://servergue.cf/playground/kpu/dt/clash.php',
+			data: {url: 'clan/search', params: $(this).serialize()},
+			success: function(res){
+				var response = $.parseJSON(res);
+				var html = '<br>';
+				if (typeof response!='undefined' && response.length > 0) {
+					console.log(response);
+					html += '<ul>';
+					for (var i = 0; i < response.length; i++) {
+						html += '<li><a href="javascript:void(0);" onclick="detailClan(\''+response[i].tag+'\')" title="'+response[i].name+'">'+response[i].name+'</a></li>';
+					}
+					html += '</ul>';
+					$('#result').empty().append(html);
+				}
+			}
+		});
+		e.preventDefault();
+	});
+
+	function detailClan(clan_tag) {
+		$.ajax({
+			type: 'POST',
+			url : 'https://servergue.cf/playground/kpu/dt/clash.php',
+			data: {url: 'clan/'+clan_tag},
+			success: function(res){
+				var response = $.parseJSON(res);
+				var html = '';
+				if (typeof response!='undefined') {
+					console.log(response);
+					html += '<table class="table">';
+					html += '<tr><td>Nama</td><td>:</td><td>'+response.name+'</td></tr>';
+					html += '<tr><td>Deskripsi</td><td>:</td><td>'+response.description+'</td></tr>';
+					html += '<tr><td>Type</td><td>:</td><td>'+response.type+'</td></tr>';
+					html += '<tr><td>Total Membet</td><td>:</td><td>'+response.memberCount+'</td></tr>';
+					html += '<tr><td>Donation/week</td><td>:</td><td>'+response.donations+'</td></tr>';
+					html += '<tr><td>Required Trophy</td><td>:</td><td>'+response.requiredScore+'</td></tr>';
+					html += '</table>';
+					html += '<div class="table-responsive">';
+					html += '<table class="table table-xs table-bordered">';
+					html += '<thead><tr><th>No</th><th>Name</th><th>King Level</th><th>Trophy</th><th>#</th></tr></thead>';
+					html += '<tbody>';
+					if (response.members.length > 0) {
+						for (var i = 0; i < response.members.length; i++) {
+							html += '<tr><td>'+(i+1)+'</td><td>'+response.members[i].name+'<br><small><i>'+response.members[i].role+'</i></small></td><td>'+response.members[i].expLevel+'</td><td>'+response.members[i].trophies+'</td><td class="text-center"><a href="javascript:void(0);" onclick="detailPlayer(\''+response.members[i].tag+'\');" class="btn btn-primary">Detail</a></td></tr>';
+						}
+					} else {
+						html += '<tr><td colspan="5">Members not found</td></tr>';
+					}
+					html += '<tbody>';
+					html += '</table>';
+					html += '</div>';
+					$('#collapseContent').empty().append(html);
+					$('#divCollapse').collapse('show');
+				}
+			}
+		});
+	}
+
+	function detailPlayer(player_tag) {
+		$.ajax({
+			type: 'POST',
+			url : 'https://servergue.cf/playground/kpu/dt/clash.php',
+			data: {url: 'player/'+player_tag},
+			success: function(res){
+				var response = $.parseJSON(res);
+				var html = '';
+				if (typeof response!='undefined') {
+					console.log(response);
+					html += response.name+' ('+response.trophies+')';
+					$('#modalTitle').empty().append(html);
+					html = '';
+					html += '<h4>Battle Deck</h4><div class="row">';
+					for (var i = 0; i < response.currentDeck.length; i++) {
+						html += '<div class="col-md-3 col-sm-3 col-xs-6"><div class="text-center"><span>'+response.currentDeck[i].name+' <span class="badge">'+(13 - response.currentDeck[i].maxLevel + response.currentDeck[i].level)+'</span></span></div><img src="'+response.currentDeck[i].icon+'" alt="'+response.currentDeck[i].name+'" class="img-responsive"></div>';
+					}
+					html += '</div>'
+					$('#divDetailPlayer').empty().append(html);
+
+					$.ajax({
+						type: 'POST',
+						url : 'https://servergue.cf/playground/kpu/dt/clash.php',
+						data: {url: 'player/'+player_tag+'/chests'},
+						success: function(res2){
+							var resp = $.parseJSON(res2);
+							if (typeof resp!='undefined') {
+								html = '<hr>';
+								html += '<h4>Upcoming Chest</h4>';
+								html += '<span>Next Chest : '+resp.upcoming.join(', ')+'</span><br>';
+								html += '<span>Next Giant Chest: '+resp.giant+'</span><br>';
+								html += '<span>Next Magical Chest: '+resp.magical+'</span><br>';
+								html += '<span>Next Super Magical Chest: '+resp.superMagical+'</span><br>';
+								html += '<span>Next Epic Chest: '+resp.epic+'</span><br>';
+								html += '<span>Next Legendary Chest: '+resp.legendary+'</span>';
+								$('#divDetailPlayer').append(html);
+
+								$('#detailModal').modal('show');
+							}
+						}
+					});
+
+				}
+			}
+		});
+	}
+</script>
+</html>
