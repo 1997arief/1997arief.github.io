@@ -1,11 +1,27 @@
-body{
-	font-family: 'Ubuntu', sans-serif;
+/* Custom global styles & scrollbar */
+html {
+    scroll-behavior: smooth;
 }
-.custom-links{
-	text-decoration: none;
-	color: #000;
+
+::selection {
+    background-color: #dbeafe;
+    color: #1e40af;
 }
-.foot{
-	position: absolute;
-	bottom: 10px;
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
